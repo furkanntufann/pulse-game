@@ -1,0 +1,42 @@
+# Codemagic — Pulse iOS build
+# https://codemagic.io — 14 gün deneme
+# İmzalama: Codemagic UI → iOS code signing (Apple Developer hesabı gerekir)
+
+workflows:
+  pulse-ios:
+    name: Pulse iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      xcode: latest
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: com.pulse.game
+
+    scripts:
+      - name: Bağımlılıklar
+        script: flutter pub get
+      - name: iOS IPA derle
+        script: flutter build ipa --release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+  pulse-android:
+    name: Pulse Android APK
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+
+    scripts:
+      - name: Bağımlılıklar
+        script: flutter pub get
+      - name: Android APK
+        script: flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
