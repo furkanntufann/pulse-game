@@ -18,10 +18,19 @@ workflows:
     scripts:
       - name: Bağımlılıklar ve iOS şeması
         script: |
+          flutter config --no-enable-swift-package-manager
+          if [ ! -f "ios/Podfile" ]; then
+            echo "Podfile eksik, iOS klasoru yeniden olusturuluyor..."
+            flutter create . --org com.tufan --project-name nabiz --platforms=ios
+          fi
+          if ! grep -q "platform :ios" "ios/Podfile"; then
+            echo "platform :ios, '13.0' ekleniyor..."
+            sed -i.bak "1s;^;platform :ios, '13.0'\n\n;" "ios/Podfile"
+          fi
           flutter pub get
           if [ ! -f "ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" ]; then
             echo "Runner.xcscheme repoda yok — ios klasoru tamamlaniyor..."
-            flutter create . --org com.pulse --project-name nabiz --platforms=ios
+            flutter create . --org com.tufan --project-name nabiz --platforms=ios
           fi
           test -f "ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" || exit 1
       - name: iOS IPA derle
