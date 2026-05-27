@@ -31,7 +31,8 @@ workflows:
           for f in build/ios/ipa/*.ipa build/ios/**/*.ipa; do
             cp "$f" artifacts/ios/
           done
-          ls -la artifacts/ios || true
+          ls -la artifacts/ios
+          test -n "$(ls -1 artifacts/ios/*.ipa 2>/dev/null)" || { echo "IPA uretilmedi"; exit 1; }
 
     artifacts:
       - artifacts/ios/*.ipa
