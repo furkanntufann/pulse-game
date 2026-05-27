@@ -21,6 +21,15 @@ workflows:
       - name: Configure signing files
         script: |
           set -e
+          if [ -z "${CERTIFICATE_PRIVATE_KEY:-}" ]; then
+            echo "HATA: CERTIFICATE_PRIVATE_KEY tanimli degil."
+            echo "Codemagic -> Environment variables -> grup 'code-signing' ->"
+            echo "Variable: CERTIFICATE_PRIVATE_KEY (Secret), RSA private key tam metin."
+            echo "Olusturmak icin (Windows PowerShell):"
+            echo '  ssh-keygen -t rsa -b 2048 -m PEM -f ios_distribution_private_key -q -N ""'
+            echo "Dosyanin tum icerigini (BEGIN/END satirlari dahil) degiskene yapistirin."
+            exit 1
+          fi
           keychain initialize
           PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
           mkdir -p "$PROFILES_DIR"
