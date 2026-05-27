@@ -25,12 +25,12 @@ workflows:
 
       - name: Build iOS IPA
         script: |
-          flutter build ipa --release --export-method development
+          # Profile eslestirmesini Codemagic CLI ile kullanarak IPA olustur.
+          xcode-project build-ipa \
+            --project ios/Runner.xcodeproj \
+            --scheme Runner
           mkdir -p artifacts/ios
-          shopt -s globstar nullglob
-          for f in build/ios/ipa/*.ipa build/ios/**/*.ipa; do
-            cp "$f" artifacts/ios/
-          done
+          find build -type f -name "*.ipa" -exec cp {} artifacts/ios/ \;
           ls -la artifacts/ios
           test -n "$(ls -1 artifacts/ios/*.ipa 2>/dev/null)" || { echo "IPA uretilmedi"; exit 1; }
 
