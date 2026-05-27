@@ -53,12 +53,68 @@ git push -u origin main
 
 1. [Apple Developer](https://developer.apple.com/account) → hesap açın / giriş  
 2. **Certificates, Identifiers & Profiles**  
-3. **Identifiers** → **+** → App IDs → Bundle ID: **`com.pulse.game`** (projeyle aynı)  
+3. **Identifiers** → **+** → App IDs → Bundle ID: **`com.tufan.pulsegame`** (projeyle aynı)  
 4. Codemagic’te uygulamanız → **Settings** → **codemagic.yaml** iş akışı `pulse-ios`  
 5. **Teams** → **Integrations** → **Developer Portal** → Apple ID veya **App Store Connect API key** bağlayın  
-6. **Environment variables** → grup `code-signing` → **`CERTIFICATE_PRIVATE_KEY`** (RSA private key, `-----BEGIN RSA PRIVATE KEY-----` ile) — dağıtım sertifikası oluşturmak için gerekli  
+6. **`CERTIFICATE_PRIVATE_KEY`** (zorunlu) — aşağıdaki alt bölüm  
 7. **Teams** → **Integrations** → **App Store Connect** → `Pulse` API anahtarı (yaml’daki `integrations.app_store_connect` ile aynı ad)  
-8. **Code signing identities** (isteğe bağlı): UI’da profil yoksa sorun değil; `codemagic.yaml` build sırasında **App Store** profilini Apple’dan çeker. UI’da yalnızca **development** varsa `ios_signing: app_store` **kullanmayın** — “No matching profiles found” hatası verir  
+8. **Code signing identities** (isteğe bağlı): UI’da profil yoksa sorun değil; build sırasında **App Store** profili Apple’dan çekilir  
+
+### CERTIFICATE_PRIVATE_KEY (Windows)
+
+Bu anahtar olmadan build şu hatayı verir: *Cannot save Signing Certificates without certificate private key*.
+
+1. PowerShell (proje klasöründe veya Masaüstü’nde):
+
+```powershell
+ssh-keygen -t rsa -b 2048 -m PEM -f ios_distribution_private_key -q -N '""'
+```
+
+2. `ios_distribution_private_key` dosyasını Not Defteri ile açın — **tamamını** kopyalayın (`-----BEGIN RSA PRIVATE KEY-----` … `-----END RSA PRIVATE KEY-----`).
+
+3. Codemagic → uygulama **pulse-game** → **Environment variables** → **Add**:
+   - **Variable name:** `CERTIFICATE_PRIVATE_KEY` (tam bu isim)
+   - **Variable value:** kopyaladığınız private key
+   - **Secret:** işaretli
+   - **Group name:** `code-signing` (yaml’daki `groups` ile aynı)
+
+4. **Save** → yeni build. İlk seferde Codemagic Apple’da **iOS Distribution** sertifikası + **App Store** profili oluşturabilir.
+
+> Bu dosyayı GitHub’a **commit etmeyin**. Sadece Codemagic’te Secret olarak kalsın.
+
+### 403 — “not allowed to perform this operation” (Distribution sertifikası)
+
+Log’da şunu görürseniz API anahtarı sertifika **oluşturamaz** (yetki veya hesap rolü):
+
+```text
+POST .../v1/certificates returned 403: ... not allowed to perform this operation
+```
+
+**Çözüm A — API anahtarını düzeltin (tercih)**
+
+1. [App Store Connect](https://appstoreconnect.apple.com) → **Users and Access** → **Integrations** → **App Store Connect API**  
+2. Yeni anahtar: **Access** = **Admin** (veya sertifika yönetebilen **Account Holder** hesabıyla oluşturun)  
+3. `.p8` dosyasını indirin (yalnızca bir kez)  
+4. Codemagic → **Teams** → **Integrations** → **Pulse** → anahtarı güncelleyin  
+5. Yeniden build  
+
+**Çözüm B — Sertifikayı elle oluşturup Codemagic’e yükleyin (403 devam ederse)**
+
+1. [developer.apple.com](https://developer.apple.com/account) → **Certificates** → **+** → **Apple Distribution**  
+2. CSR için (PowerShell, `ios_distribution_private_key` ile **aynı** anahtar):
+
+```powershell
+openssl req -new -key ios_distribution_private_key -out ios_dist.csr -subj "/email=tufanyazilimdanismanlik@gmail.com/CN=Tufan/C=TR"
+```
+
+3. CSR’yi Apple’a yükleyin → indirilen `.cer` dosyasını kaydedin  
+4. **Profiles** → **+** → **App Store** → `com.tufan.pulsegame` → az önceki Distribution sertifikasını seçin → profili indirin (`.mobileprovision`)  
+5. Codemagic → **Teams** → **Code signing identities** →  
+   - **iOS certificates:** `.p12` yükleyin (sertifika + private key; şifre boş veya kendi şifreniz)  
+   - **iOS provisioning profiles:** `.mobileprovision` yükleyin  
+6. `codemagic.yaml` içinde `ios_signing` ile `distribution_type: app_store` kullanın; `fetch-signing-files --create` satırını kaldırın veya `--create` olmadan yalnızca indirme yapın  
+
+> **Not:** Apple hesabınızda yıllık **Apple Developer Program** (99 USD) ve hesapta **Admin / Account Holder** rolü olmalı. Sadece “Developer” davetli kullanıcılar sertifika oluşturamaz.
 
 ### iPhone 15 Pro Max UDID (development için)
 
@@ -102,6 +158,8 @@ Android denemek için: workflow **Pulse Android** → `.apk` indirilir.
 | Signing failed | Bundle ID `com.pulse.game` Apple + Codemagic’te aynı mı kontrol edin |
 | Build failed flutter | `flutter pub get` lokal çalışıyor mu; `pubspec.lock` commit’lendi mi |
 | IPA yok | `pulse-ios` workflow seçildi mi; log’da `flutter build ipa` hatası var mı |
+| **Cannot save Signing Certificates without certificate private key** | `CERTIFICATE_PRIVATE_KEY` yok veya grup adı `code-signing` değil; yukarıdaki adımları uygulayın |
+| **403** / not allowed to perform this operation | App Store Connect API anahtarı **Admin** değil veya hesap sertifika oluşturamaz; yukarıdaki **403** bölümüne bakın |
 | **No matching profiles** + `app_store` | Codemagic UI’da App Store profili yok; `ios_signing` bloğunu kaldırın, yaml’daki `fetch-signing-files --type IOS_APP_STORE` kullanın |
 | **90161** / Invalid Provisioning Profile | IPA **Development** ile imzalanmıştır. `IOS_APP_STORE` ve `ExportOptions` → `app-store` olmalı; yeniden build alın |
 | 14 gün bitti | APK için Android workflow hâlâ işe yarar; iOS için plan veya Mac |
