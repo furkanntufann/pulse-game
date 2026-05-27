@@ -23,10 +23,40 @@ workflows:
           keychain add-certificates
           xcode-project use-profiles
 
+      - name: Create export options plist
+        script: |
+          PROFILE_PATH=$(find "$HOME/Library/MobileDevice/Provisioning Profiles" -name "*.mobileprovision" | head -n1)
+          if [ -z "$PROFILE_PATH" ]; then
+            echo "Provisioning profile bulunamadi"
+            exit 1
+          fi
+          PROFILE_UUID=$(security cms -D -i "$PROFILE_PATH" | plutil -extract UUID raw -)
+          TEAM_ID=$(security cms -D -i "$PROFILE_PATH" | plutil -extract TeamIdentifier.0 raw -)
+          cat > /tmp/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>development</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.tufan.pulsegame</key>
+              <string>$PROFILE_UUID</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+          cat /tmp/ExportOptions.plist
+
       - name: Build iOS IPA
         script: |
-          # Flutter, Pods/Workspace ile derlesin; plugin derleme hatalarini onler.
-          flutter build ipa --release --export-method development
+          # Flutter, Pods/Workspace ile derlesin; export'ta profile eslesmesini zorla.
+          flutter build ipa --release --export-options-plist=/tmp/ExportOptions.plist
           mkdir -p artifacts/ios
           find build -type f -name "*.ipa" -exec cp {} artifacts/ios/ \;
           ls -la artifacts/ios
