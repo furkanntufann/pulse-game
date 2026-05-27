@@ -10,20 +10,21 @@ workflows:
       ios_signing:
         distribution_type: development
         bundle_identifier: com.tufan.pulsegame
+
     scripts:
-      - name: iOS dependencies
+      - name: Resolve Flutter deps
         script: |
           flutter config --no-enable-swift-package-manager
           flutter pub get
 
-      - name: Configure iOS code signing
+      - name: Configure signing files
         script: |
           keychain initialize
           app-store-connect fetch-signing-files "com.tufan.pulsegame" --type IOS_APP_DEVELOPMENT --create
           keychain add-certificates
           xcode-project use-profiles
 
-      - name: Create export options plist
+      - name: Create export options
         script: |
           PROFILE_PATH=$(find "$HOME/Library/MobileDevice/Provisioning Profiles" -name "*.mobileprovision" | head -n1)
           if [ -z "$PROFILE_PATH" ]; then
@@ -51,11 +52,9 @@ workflows:
           </dict>
           </plist>
           EOF
-          cat /tmp/ExportOptions.plist
 
-      - name: Build iOS IPA
+      - name: Build IPA
         script: |
-          # Flutter, Pods/Workspace ile derlesin; export'ta profile eslesmesini zorla.
           flutter build ipa --release --export-options-plist=/tmp/ExportOptions.plist
           mkdir -p artifacts/ios
           find build -type f -name "*.ipa" -exec cp {} artifacts/ios/ \;
@@ -66,3 +65,23 @@ workflows:
       - artifacts/ios/*.ipa
       - build/ios/ipa/*.ipa
       - build/ios/archive/*.xcarchive
+
+  pulse-android:
+    name: Pulse Android
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+
+    scripts:
+      - name: Resolve Flutter deps
+        script: flutter pub get
+      - name: Build Android bundle and apk
+        script: |
+          flutter build appbundle --release
+          flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk
