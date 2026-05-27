@@ -31,7 +31,7 @@ git commit -m "Pulse oyunu - Codemagic icin ilk surum"
 GitHub’da yeni repo oluşturun (ör. `pulse-game`), sonra:
 
 ```powershell
-git remote add origin https://github.com/KULLANICI_ADINIZ/pulse-game.git
+git remote add origin https://github.com/furkanntufann/pulse-game.git
 git branch -M main
 git push -u origin main
 ```
@@ -99,6 +99,7 @@ Android denemek için: workflow **Pulse Android** → `.apk` indirilir.
 
 | Sorun | Çözüm |
 |--------|--------|
+| **Scheme "Runner" not found** | `ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme` GitHub’da olmalı. Commit + push. Güncel `codemagic.yaml` eksikse otomatik tamamlar. |
 | Signing failed | Bundle ID `com.pulse.game` Apple + Codemagic’te aynı mı kontrol edin |
 | Build failed flutter | `flutter pub get` lokal çalışıyor mu; `pubspec.lock` commit’lendi mi |
 | IPA yok | `pulse-ios` workflow seçildi mi; log’da `flutter build ipa` hatası var mı |

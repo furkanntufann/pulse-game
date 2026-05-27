@@ -31,6 +31,16 @@ class AppStrings {
   String get bestComboLabel => _t('En iyi combo', 'Best combo');
 
   String get tapToReplay => _t('Tekrar oynamak için dokun', 'Tap to play again');
+  String get finishButton => _t('Bitir', 'Finish');
+  String get watchAdContinueButton => _t('Izle (+2 Can)', 'Watch (+2 Lives)');
+  String get rewardAdNotReady => _t(
+        'Reklam henuz hazir degil, lutfen biraz sonra tekrar deneyin.',
+        'Reward ad is not ready yet, please try again shortly.',
+      );
+  String get startupAdInfo => _t(
+        'Acilis reklami yukleniyor...',
+        'Loading startup ad...',
+      );
 
   String perfectHit(int combo) =>
       _t('MÜKEMMEL x$combo', 'PERFECT x$combo');

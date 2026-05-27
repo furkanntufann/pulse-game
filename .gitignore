@@ -18,6 +18,10 @@ build/
 Thumbs.db
 
 # pubspec.lock COMMIT edilmeli (Codemagic icin)
+
+# iOS Xcode scheme — Codemagic icin ZORUNLU (bazi global gitignore'lar *.xcscheme'i gizler)
+*.xcscheme
+!ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
 # Platform build outputs
 android/.gradle/
 android/app/debug/
@@ -26,3 +30,7 @@ android/app/release/
 ios/Pods/
 ios/.symlinks/
 windows/flutter/ephemeral/
+
+# Signing secrets
+android/key.properties
+upload-keystore.jks

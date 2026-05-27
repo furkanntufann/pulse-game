@@ -195,6 +195,22 @@ class PulseEngine {
     }
   }
 
+  void continueAfterReward({
+    required int extraLives,
+    required double now,
+  }) {
+    if (!isGameOver) return;
+    lives = min(maxLives, lives + extraLives);
+    if (lives <= 0) {
+      lives = 1;
+    }
+    isGameOver = false;
+    activePulse = null;
+    waitingForNextPulse = true;
+    _lastSpawnTime = now;
+    _spawnDelay = 0.4;
+  }
+
   /// İlk nabızı başlatmak için.
   void start(double now) {
     reset();
