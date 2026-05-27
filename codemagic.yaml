@@ -26,6 +26,14 @@ workflows:
       - name: Build iOS IPA
         script: |
           flutter build ipa --release --export-method development
+          mkdir -p artifacts/ios
+          shopt -s globstar nullglob
+          for f in build/ios/ipa/*.ipa build/ios/**/*.ipa; do
+            cp "$f" artifacts/ios/
+          done
+          ls -la artifacts/ios || true
 
     artifacts:
+      - artifacts/ios/*.ipa
       - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
