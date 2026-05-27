@@ -7,9 +7,10 @@ workflows:
     environment:
       flutter: stable
       xcode: latest
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.tufan.pulsegame
+      groups:
+        - code-signing
+      # App Store profili build sirasinda fetch-signing-files ile alinir.
+      # ios_signing kullanmayin: Codemagic UI'da onceden yuklu profil ister.
 
     scripts:
       - name: Resolve Flutter deps
@@ -19,10 +20,16 @@ workflows:
 
       - name: Configure signing files
         script: |
+          set -e
           keychain initialize
-          app-store-connect fetch-signing-files "com.tufan.pulsegame" --type IOS_APP_STORE --create
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+          app-store-connect fetch-signing-files "com.tufan.pulsegame" \
+            --type IOS_APP_STORE \
+            --create \
+            --profiles-dir "$PROFILES_DIR"
           keychain add-certificates
-          xcode-project use-profiles
+          xcode-project use-profiles --code-signing-setup-verbose-logging
 
       - name: Create export options
         script: |
