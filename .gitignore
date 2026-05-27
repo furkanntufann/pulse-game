@@ -34,3 +34,5 @@ windows/flutter/ephemeral/
 # Signing secrets
 android/key.properties
 upload-keystore.jks
+ios_distribution_private_key
+ios_distribution_private_key.pub
