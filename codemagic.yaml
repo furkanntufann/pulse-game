@@ -25,10 +25,8 @@ workflows:
 
       - name: Build iOS IPA
         script: |
-          # Profile eslestirmesini Codemagic CLI ile kullanarak IPA olustur.
-          xcode-project build-ipa \
-            --project ios/Runner.xcodeproj \
-            --scheme Runner
+          # Flutter, Pods/Workspace ile derlesin; plugin derleme hatalarini onler.
+          flutter build ipa --release --export-method development
           mkdir -p artifacts/ios
           find build -type f -name "*.ipa" -exec cp {} artifacts/ios/ \;
           ls -la artifacts/ios
