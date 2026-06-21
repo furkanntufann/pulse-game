@@ -119,7 +119,9 @@ workflows:
       - name: Build Android App Bundle
         script: |
           flutter build appbundle --release
+          flutter build apk --release
           ls -la build/app/outputs/bundle/release/
+          ls -la build/app/outputs/flutter-apk/
           if jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab 2>&1 | grep -q "CN=Android Debug"; then
             echo "HATA: AAB debug imzali — keystore ayarlarini kontrol edin."
             exit 1
@@ -128,6 +130,7 @@ workflows:
 
     artifacts:
       - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/app-release.apk
 
     # Otomatik Play yukleme icin PLAY-STORE.md "Bolum 5" + google_play_credentials grubu
     # publishing:
