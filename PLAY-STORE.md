@@ -28,6 +28,38 @@ iOS’u atlayıp doğrudan Android ile Play Store’a gidebilirsiniz. Paket adı
 
 ---
 
+## Gizlilik politikası URL (GitHub Pages)
+
+Projede hazır sayfa: `docs/privacy-policy.html`
+
+### Adım 1 — GitHub’a push
+
+```powershell
+git add docs/privacy-policy.html
+git commit -m "Gizlilik politikasi sayfasi"
+git push origin main
+```
+
+### Adım 2 — GitHub Pages aç
+
+1. https://github.com/furkanntufann/pulse-game → **Settings**
+2. Sol menü → **Pages**
+3. **Build and deployment** → Source: **Deploy from a branch**
+4. Branch: **main** → Folder: **/docs** → **Save**
+5. 1–2 dakika bekleyin; yeşil link görünür
+
+### Adım 3 — Play Console’a yapıştır
+
+Gizlilik politikası URL:
+
+```
+https://furkanntufann.github.io/pulse-game/privacy-policy.html
+```
+
+Play Console → **Uygulama içeriği** → **Gizlilik politikası** → bu URL’yi girin.
+
+---
+
 ## 2) Codemagic — keystore (imzalama)
 
 Projede `upload-keystore.jks` ve `android/key.properties` var (Git’e **girmez**).
