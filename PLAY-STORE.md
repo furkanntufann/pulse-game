@@ -1,4 +1,4 @@
-# Pulse — Google Play Store yükleme
+# Ripple Rush — Google Play Store yükleme
 
 iOS’u atlayıp doğrudan Android ile Play Store’a gidebilirsiniz. Paket adı: **`com.tufan.pulsegame`**
 
@@ -9,7 +9,7 @@ iOS’u atlayıp doğrudan Android ile Play Store’a gidebilirsiniz. Paket adı
 1. Google Play Console hesabı (tek seferlik ~25 USD)
 2. Uygulama oluştur
 3. Keystore’u Codemagic’e ekle
-4. Codemagic **Pulse Android** build → `.aab` indir veya otomatik yükle
+4. Codemagic **Ripple Rush Android** build → `.aab` indir veya otomatik yükle
 5. Play Console’da inceleme / yayın
 
 ---
@@ -19,7 +19,7 @@ iOS’u atlayıp doğrudan Android ile Play Store’a gidebilirsiniz. Paket adı
 1. https://play.google.com/console → Google hesabı  
 2. Geliştirici kaydı (~**25 USD**, tek seferlik)  
 3. **Create app**  
-   - Ad: **Pulse**  
+   - Ad: **Ripple Rush**  
    - Varsayılan dil: Türkçe  
    - Uygulama / oyun: **Game**  
 4. **Dashboard** → zorunlu bölümleri doldurun (gizlilik politikası URL’si, ekran görüntüleri, kısa/açıklama metni vb.)
@@ -97,7 +97,9 @@ git commit -m "Google Play Android build"
 git push
 ```
 
-Codemagic → **pulse-game** → **Start new build** → workflow: **Pulse Android**
+Codemagic → **pulse-game** → **Start new build** → workflow: **Ripple Rush Android**
+
+Mağaza metinleri için: **STORE-LISTING.md**
 
 Başarılı olunca **Artifacts** → `app-release.aab` indirin.
 

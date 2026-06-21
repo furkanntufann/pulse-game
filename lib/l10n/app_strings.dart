@@ -7,11 +7,11 @@ class AppStrings {
 
   String _t(String tr, String en) => locale == AppLocale.tr ? tr : en;
 
-  String get gameTitle => 'NABIZ';
+  String get gameTitle => 'Ripple Rush';
 
   String get tagline => _t(
-        'Doğru anda dokun, combo yap',
-        'Tap at the right moment, build your combo',
+        'Dalgalara tam vuruş yap, combo kur',
+        'Hit the ripple, build your combo',
       );
 
   String get howToPlay => _t('Nasıl oynanır?', 'How to play?');
@@ -26,7 +26,7 @@ class AppStrings {
 
   String comboCount(int n) => '$combo x$n';
 
-  String get gameOverTitle => _t('NABIZ Durdu', 'NABIZ Stopped');
+  String get gameOverTitle => _t('Ripple Rush Durdu', 'Ripple Rush Stopped');
 
   String get bestComboLabel => _t('En iyi combo', 'Best combo');
 

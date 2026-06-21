@@ -1,6 +1,6 @@
 workflows:
   pulse-ios:
-    name: Pulse iOS
+    name: Ripple Rush iOS
     max_build_duration: 60
     instance_type: mac_mini_m2
 
@@ -82,7 +82,7 @@ workflows:
       app_store_connect: Pulse
 
   pulse-android:
-    name: Pulse Android
+    name: Ripple Rush Android
     max_build_duration: 30
     instance_type: mac_mini_m2
 

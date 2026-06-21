@@ -1,11 +1,11 @@
 {
-    "name": "nabiz",
-    "short_name": "nabiz",
+    "name": "Ripple Rush",
+    "short_name": "Ripple Rush",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Hit expanding rings on time, build combos, beat your high score.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

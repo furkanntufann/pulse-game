@@ -1,4 +1,4 @@
-# NABIZ — Kurulum ve Test Rehberi
+# Ripple Rush — Kurulum ve Test Rehberi
 
 Bu klasörde oyun kodu hazır. Bilgisayarınızda **Flutter SDK** kurulduktan sonra aşağıdaki adımlarla çalıştırırsınız.
 

@@ -8,16 +8,16 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  runApp(const PulseApp());
+  runApp(const RippleRushApp());
 }
 
-class PulseApp extends StatelessWidget {
-  const PulseApp({super.key});
+class RippleRushApp extends StatelessWidget {
+  const RippleRushApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NABIZ',
+      title: 'Ripple Rush',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
