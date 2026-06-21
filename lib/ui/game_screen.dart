@@ -183,12 +183,13 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     await _adService.maybeShowDeathInterstitial();
   }
 
-  Future<void> _restartAfterGameOver() async {
+  Future<void> _returnToStartScreen() async {
     await _saveRunAndRefreshHud();
     if (!mounted) return;
     setState(() {
+      _started = false;
       _runSaved = false;
-      _engine.start(_lastTickSeconds);
+      _engine.reset();
       _lastHit = null;
       _hitFlash = 0;
       _floatingText = null;
@@ -603,7 +604,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: _restartAfterGameOver,
+              onPressed: _returnToStartScreen,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                 foregroundColor: Colors.white,

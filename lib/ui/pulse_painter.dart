@@ -24,31 +24,12 @@ class PulsePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final targetR = engine.targetRadius;
 
-    // Arka plan nabız ızgarası
-    _drawBackground(canvas, size, center);
-
-    // Hedef halka (tatlı nokta)
+    // Hedef halka (turkuaz nokta)
     final targetPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..color = const Color(0xFF00E5C8).withValues(alpha: 0.55 + 0.25 * sin(pulseTime * 3));
     canvas.drawCircle(center, targetR, targetPaint);
-
-    final innerGlow = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 12
-      ..color = const Color(0xFF00E5C8).withValues(alpha: 0.08);
-    canvas.drawCircle(center, targetR, innerGlow);
-
-    // Perfect / good bölgeleri (ince)
-    for (final w in [14.0, 28.0]) {
-      final zonePaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..color = Colors.white.withValues(alpha: w == 14 ? 0.06 : 0.03);
-      canvas.drawCircle(center, targetR - w, zonePaint);
-      canvas.drawCircle(center, targetR + w, zonePaint);
-    }
 
     // Aktif genişleyen halka
     final pulse = engine.activePulse;
@@ -61,14 +42,6 @@ class PulsePainter extends CustomPainter {
         ..strokeWidth = pulse.isDecoy ? 2.5 : 4
         ..color = color.withValues(alpha: pulse.isDecoy ? 0.45 : 0.9);
       canvas.drawCircle(center, pulse.radius, ringPaint);
-
-      if (!pulse.isDecoy) {
-        final trailPaint = Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..color = color.withValues(alpha: 0.25);
-        canvas.drawCircle(center, pulse.radius - 10, trailPaint);
-      }
     }
 
     // Merkez çekirdek
@@ -96,15 +69,6 @@ class PulsePainter extends CustomPainter {
       final flashPaint = Paint()
         ..color = flashColor.withValues(alpha: hitFlash * 0.35);
       canvas.drawCircle(center, targetR + 40 * (1 - hitFlash), flashPaint);
-    }
-  }
-
-  void _drawBackground(Canvas canvas, Size size, Offset center) {
-    final gridPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
-      ..strokeWidth = 1;
-    for (var i = 1; i <= 4; i++) {
-      canvas.drawCircle(center, i * 55.0, gridPaint);
     }
   }
 

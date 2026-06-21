@@ -39,7 +39,7 @@ class PulseEngine {
   // Başlangıç yavaş, orta-geç oyun daha sert rampa
   static const double _baseSpeed = 68;
   static const double _speedPerDifficulty = 3.8;
-  static const double _maxSpeed = 350;
+  static const double _maxSpeed = 297.5;
   static const double _difficultyPerfect = 0.85;
   static const double _difficultyGood = 0.55;
 

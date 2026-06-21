@@ -7,7 +7,7 @@ class AppStrings {
 
   String _t(String tr, String en) => locale == AppLocale.tr ? tr : en;
 
-  String get gameTitle => 'Pulse';
+  String get gameTitle => 'NABIZ';
 
   String get tagline => _t(
         'Doğru anda dokun, combo yap',
@@ -26,7 +26,7 @@ class AppStrings {
 
   String comboCount(int n) => '$combo x$n';
 
-  String get gameOverTitle => _t('Pulse Durdu', 'Pulse Stopped');
+  String get gameOverTitle => _t('NABIZ Durdu', 'NABIZ Stopped');
 
   String get bestComboLabel => _t('En iyi combo', 'Best combo');
 
