@@ -23,9 +23,13 @@ class AdService {
 
   Future<void> initialize() async {
     if (!isSupportedPlatform) return;
-    await MobileAds.instance.initialize();
-    _loadInterstitial();
-    _loadRewarded();
+    try {
+      await MobileAds.instance.initialize();
+      _loadInterstitial();
+      _loadRewarded();
+    } catch (_) {
+      // Reklam SDK baslatilamazsa oyun yine acilsin.
+    }
   }
 
   Future<void> maybeShowStartupInterstitial({required Duration delay}) async {

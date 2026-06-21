@@ -60,9 +60,13 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   }
 
   Future<void> _initializeAds() async {
-    await _adService.initialize();
-    if (!mounted) return;
-    _adService.maybeShowStartupInterstitial(delay: const Duration(seconds: 3));
+    try {
+      await _adService.initialize();
+      if (!mounted) return;
+      _adService.maybeShowStartupInterstitial(delay: const Duration(seconds: 3));
+    } catch (_) {
+      // Reklam hatasi oyunu kapatmasin.
+    }
   }
 
   Future<void> _loadInitialData() async {

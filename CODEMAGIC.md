@@ -4,6 +4,61 @@ Windows’ta iOS derlenemez; **Codemagic** bulutta Mac kullanarak IPA üretir. 1
 
 ---
 
+## 403 hatası — önce bunu yapın (zorunlu)
+
+Build log’unda `POST .../certificates returned 403` görüyorsanız API ile sertifika **oluşturulamaz**. Şu sırayı izleyin, sonra build alın:
+
+### 1) Apple’da Distribution sertifikası (web sitesi)
+
+1. [developer.apple.com/account](https://developer.apple.com/account) → **Certificates** → **+**  
+2. **Apple Distribution** → Continue  
+3. Windows PowerShell (daha önce oluşturduğunuz anahtar yoksa):
+
+```powershell
+cd $env:USERPROFILE\Desktop
+ssh-keygen -t rsa -b 2048 -m PEM -f ios_distribution_private_key -q -N '""'
+openssl req -new -key ios_distribution_private_key -out ios_dist.csr -subj "/email=tufanyazilimdanismanlik@gmail.com/CN=Tufan/C=TR"
+```
+
+4. `ios_dist.csr` dosyasını Apple’a yükleyin → **Download** ile `.cer` indirin (ör. `distribution.cer`)
+
+### 2) .p12 dosyası (Codemagic’e yüklenecek)
+
+```powershell
+openssl x509 -inform DER -in distribution.cer -out distribution.pem
+openssl pkcs12 -export -inkey ios_distribution_private_key -in distribution.pem -out PulseDistribution.p12 -passout pass:
+```
+
+`PulseDistribution.p12` oluşur (şifre boş).
+
+### 3) App Store provisioning profile
+
+1. **Profiles** → **+** → **App Store Connect** (veya App Store)  
+2. App ID: **com.tufan.pulsegame**  
+3. Az önceki **Distribution** sertifikasını seçin → profili indirin (`.mobileprovision`)
+
+### 4) Codemagic’e yükle
+
+1. Codemagic → **Teams** (veya Personal) → **codemagic.yaml settings** → **Code signing identities**  
+2. **iOS certificates** → Upload → `PulseDistribution.p12` (şifre boş bırakılabilir)  
+3. **iOS provisioning profiles** → Upload → indirdiğiniz `.mobileprovision`  
+4. Profilde bundle ID **com.tufan.pulsegame**, tip **App Store** olmalı  
+
+### 5) Git push + build
+
+```powershell
+cd "C:\Users\Furkan\OneDrive - Beykent Üniversitesi\Masaüstü\oyun"
+git add codemagic.yaml
+git commit -m "iOS: Codemagic UI imzalama (403 onleme)"
+git push
+```
+
+Codemagic → **pulse-game** → **Start new build** → **Pulse iOS**.
+
+> `No matching profiles found` alırsanız: 4. adımdaki dosyalar yüklenmemiş veya bundle ID uyuşmuyor demektir.
+
+---
+
 ## Ön koşullar
 
 | Gerekli | Açıklama |
