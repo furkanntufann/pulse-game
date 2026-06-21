@@ -8,7 +8,6 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(const PulseApp());
 }
 
