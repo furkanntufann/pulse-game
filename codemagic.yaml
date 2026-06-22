@@ -104,17 +104,18 @@ workflows:
           if [ -z "${CM_KEYSTORE:-}" ]; then
             echo "HATA: Codemagic -> Environment variables -> grup keystore_credentials"
             echo "CM_KEYSTORE (base64 jks), CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD tanimlayin."
-            echo "Bkz. PLAY-STORE.md"
             exit 1
           fi
-          KEYSTORE_PATH="${CM_KEYSTORE_PATH:-/tmp/upload-keystore.jks}"
+          KEYSTORE_PATH="/tmp/upload-keystore.jks"
           echo "$CM_KEYSTORE" | base64 --decode > "$KEYSTORE_PATH"
+          export CM_KEYSTORE_PATH="$KEYSTORE_PATH"
           cat > "$CM_BUILD_DIR/android/key.properties" <<EOF
           storePassword=$CM_KEYSTORE_PASSWORD
           keyPassword=$CM_KEY_PASSWORD
           keyAlias=$CM_KEY_ALIAS
           storeFile=$KEYSTORE_PATH
           EOF
+          echo "Keystore: $KEYSTORE_PATH ($(wc -c < "$KEYSTORE_PATH") bytes)"
 
       - name: Build Android App Bundle
         script: |

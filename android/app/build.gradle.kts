@@ -36,7 +36,7 @@ android {
     signingConfigs {
         create("release") {
             val keystorePath = System.getenv("CM_KEYSTORE_PATH")
-            if (keystorePath != null) {
+            if (keystorePath != null && file(keystorePath).exists()) {
                 storeFile = file(keystorePath)
                 storePassword = System.getenv("CM_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("CM_KEY_ALIAS")
@@ -53,9 +53,15 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release").takeIf {
-                it.storeFile?.exists() == true
-            } ?: signingConfigs.getByName("debug")
+            val releaseConfig = signingConfigs.getByName("release")
+            if (releaseConfig.storeFile?.exists() != true) {
+                throw GradleException(
+                    "Release keystore bulunamadi. " +
+                        "Lokal: android/key.properties + upload-keystore.jks. " +
+                        "Codemagic: keystore_credentials grubunda CM_KEYSTORE ve sifreler."
+                )
+            }
+            signingConfig = releaseConfig
         }
     }
 }
