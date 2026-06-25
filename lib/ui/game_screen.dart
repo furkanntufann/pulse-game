@@ -234,52 +234,52 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final safe = MediaQuery.paddingOf(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF050508),
-      body: SafeArea(
-        child: MobileGameFrame(
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _onTap,
-            child: Column(
-              children: [
-                _buildHud(),
-                Expanded(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
+      backgroundColor: const Color(0xFF0A0A12),
+      body: MobileGameFrame(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _onTap,
+          child: Column(
+            children: [
+              _buildHud(safe),
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Opacity(
+                      opacity: _started ? 1.0 : 0.22,
+                      child: CustomPaint(
+                        painter: PulsePainter(
+                          engine: _engine,
+                          hitFlash: _hitFlash,
+                          hitResult: _lastHit,
+                          pulseTime: _pulseTime,
+                        ),
+                        size: Size.infinite,
+                      ),
+                    ),
+                    if (!_started) Positioned.fill(child: _buildStartOverlay(safe)),
+                    if (_engine.isGameOver) _buildGameOverOverlay(),
+                    if (_floatingText != null && _floatingOpacity > 0)
                       Opacity(
-                        opacity: _started ? 1.0 : 0.22,
-                        child: CustomPaint(
-                          painter: PulsePainter(
-                            engine: _engine,
-                            hitFlash: _hitFlash,
-                            hitResult: _lastHit,
-                            pulseTime: _pulseTime,
+                        opacity: _floatingOpacity,
+                        child: Text(
+                          _floatingText!,
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: _colorForHit(_lastHit),
+                            letterSpacing: 1.2,
                           ),
-                          size: Size.infinite,
                         ),
                       ),
-                      if (!_started) Positioned.fill(child: _buildStartOverlay()),
-                      if (_engine.isGameOver) _buildGameOverOverlay(),
-                      if (_floatingText != null && _floatingOpacity > 0)
-                        Opacity(
-                          opacity: _floatingOpacity,
-                          child: Text(
-                            _floatingText!,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                              color: _colorForHit(_lastHit),
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -418,9 +418,14 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     };
   }
 
-  Widget _buildHud() {
+  Widget _buildHud(EdgeInsets safe) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: EdgeInsets.fromLTRB(
+        20 + safe.left,
+        12 + safe.top,
+        20 + safe.right,
+        12,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -478,12 +483,12 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildStartOverlay() {
+  Widget _buildStartOverlay(EdgeInsets safe) {
     return Stack(
       children: [
         Positioned(
-          top: 8,
-          right: 12,
+          top: 8 + safe.top,
+          right: 12 + safe.right,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
