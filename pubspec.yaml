@@ -1,7 +1,7 @@
 name: nabiz
 description: Ripple Rush — genişleyen halkalara tam vuruş yap, combo kur. Hyper-casual zamanlama oyunu.
 publish_to: "none"
-version: 1.0.0+17
+version: 1.0.0+18
 
 environment:
   sdk: ">=3.2.0 <4.0.0"

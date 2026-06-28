@@ -6,7 +6,6 @@ import '../game/pulse_engine.dart';
 import '../l10n/app_locale.dart';
 import '../l10n/app_strings.dart';
 import '../models/hit_result.dart';
-import '../services/ad_service.dart';
 import '../services/locale_service.dart';
 import '../services/storage_service.dart';
 import 'language_flag_button.dart';
@@ -24,7 +23,6 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   final PulseEngine _engine = PulseEngine();
   final StorageService _storage = StorageService();
   final LocaleService _localeService = LocaleService();
-  final AdService _adService = AdService();
 
   AppLocale _locale = AppLocale.tr;
   late AppStrings _s = const AppStrings(AppLocale.tr);
@@ -43,7 +41,6 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
 
   bool _started = false;
   bool _runSaved = false;
-  bool _isRewardLoading = false;
 
   int get _displayBest =>
       _started ? (_storedBest > _engine.score ? _storedBest : _engine.score) : _storedBest;
@@ -55,18 +52,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _loadInitialData();
-    _initializeAds();
     _ticker = createTicker(_onTick)..start();
-  }
-
-  Future<void> _initializeAds() async {
-    try {
-      await _adService.initialize();
-      if (!mounted) return;
-      _adService.maybeShowStartupInterstitial(delay: const Duration(seconds: 3));
-    } catch (_) {
-      // Reklam hatasi oyunu kapatmasin.
-    }
   }
 
   Future<void> _loadInitialData() async {
@@ -179,8 +165,6 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
       _engine.bestScore = saved.bestScore;
       _engine.bestCombo = saved.bestCombo;
     });
-
-    await _adService.maybeShowDeathInterstitial();
   }
 
   Future<void> _returnToStartScreen() async {
@@ -197,38 +181,9 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     });
   }
 
-  Future<void> _continueWithRewardedAd() async {
-    if (_isRewardLoading) return;
-    if (!_adService.hasRewardedAd) {
-      _showInfoSnack(_s.rewardAdNotReady);
-      return;
-    }
-    setState(() => _isRewardLoading = true);
-    await _adService.showRewardedForContinue(
-      onRewardEarned: () {
-        _engine.continueAfterReward(
-          extraLives: 2,
-          now: _lastTickSeconds,
-        );
-        _runSaved = false;
-      },
-    );
-    if (!mounted) return;
-    setState(() {
-      _isRewardLoading = false;
-    });
-  }
-
-  void _showInfoSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   @override
   void dispose() {
     _ticker.dispose();
-    _adService.dispose();
     super.dispose();
   }
 
@@ -608,28 +563,13 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
+            child: FilledButton(
               onPressed: _returnToStartScreen,
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
-                foregroundColor: Colors.white,
-              ),
-              child: Text(_s.finishButton),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _isRewardLoading ? null : _continueWithRewardedAd,
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF00E5C8),
                 foregroundColor: const Color(0xFF0A0A12),
               ),
-              icon: const Icon(Icons.ondemand_video_rounded),
-              label: Text(
-                _isRewardLoading ? '...' : _s.watchAdContinueButton,
-              ),
+              child: Text(_s.finishButton),
             ),
           ),
         ],
